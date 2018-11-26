@@ -1,11 +1,17 @@
 package aircraft.vehicles.base;
 
+import weather.WeatherTower;
+
 public class Flyable {
-	Flyable(){
+	Flyable() {
 
 	}
 
-	public void finalize() {
+	void	updateConditions() {
+
+	}
+
+	void	registerTower(WeatherTower WeatherTower) {
 
 	}
 }

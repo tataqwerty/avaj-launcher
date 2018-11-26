@@ -41,17 +41,18 @@ public class Simulator {
 	}
 
 	private static Flyable					tokenToFlyable(TreeMap<String, String> token) throws Exception {
-		// try {
-		// 	int	longitude = Integer.parseInt(token.get("longitude"));
-		// 	int	latitude = Integer.parseInt(token.get("latitude"));
-		// 	int	height = Integer.parseInt(token.get("height"));
+		try {
+			int	longitude = Integer.parseInt(token.get("longitude"));
+			int	latitude = Integer.parseInt(token.get("latitude"));
+			int	height = Integer.parseInt(token.get("height"));
 
-		// 	return AicraftFactory.newAircraft(token.get("type"), token.get("name"), longitude, latitude, height);
-		// } catch (Exception e) {
-		// 	throw new Exception("Error : invalid integer value");
-		// }
+			return AircraftFactory.newAircraft(token.get("type"), token.get("name"), longitude, latitude, height);
+		} catch (Exception e) {
+			throw new Exception("Invalid integer value");
+		}
 
-		return AircraftFactory.newAircraft(token.get("type"), token.get("name"), Integer.parseInt(token.get("longitude")), Integer.parseInt(token.get("latitude")), Integer.parseInt(token.get("height")));
+		//	it looks a lot better, but without custom exceptions
+		// return AircraftFactory.newAircraft(token.get("type"), token.get("name"), Integer.parseInt(token.get("longitude")), Integer.parseInt(token.get("latitude")), Integer.parseInt(token.get("height")));
 	}
 
 	private static Vector<Flyable>			fileToFlyables(String fileName) throws Exception {
@@ -63,23 +64,24 @@ public class Simulator {
 		boolean					error = false;
 
 		if ((line = buffer.readLine()) == null)
-			throw new Exception("invalid first line");
+			throw new Exception("Invalid first line");
 
 		try {
 			weatherChangeCounter = Integer.parseUnsignedInt(line);
 		} catch (Exception e) {
-			throw new Exception("invalid first line");
+			throw new Exception("Invalid first line");
 		}
 
 		while ((line = buffer.readLine()) != null)
 		{
+			lineCounter++;
+
 			try {
 				flyables.add(tokenToFlyable(stringToToken(line)));
 			} catch (Exception e) {
 				error = true;
 				System.out.println("Error : " + e.getMessage() + " (line " + lineCounter + " -> " + line + " )");
 			}
-			lineCounter++;
 		}
 
 		fileStream.close();
