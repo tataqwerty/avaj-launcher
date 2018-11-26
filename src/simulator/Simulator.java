@@ -1,125 +1,100 @@
 import java.io.*;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Vector;
+import java.lang.Integer;
 
-// class UsageException extends Exception {
-// 	public String getMessage() {
-// 		return "usage : " + System.getProperty("sun.java.command") + " [scenario file]";
-// 	}
-// }
-
-// public class Simulator {
-// 	/* how many times weather should be changed, during the execution */
-// 	private static int	weatherChangeCounter;
-
-// 	private static Token			stringToToken(String s) throws Exception {
-// 		static finale Pattern	regExp = Pattern.compile("...");
-// 		static Matcher			match = regExp.matcher(s);
-// 		Token					token = null;
-// 		int						groupsIterator = 0;
-
-// 		if (match.matches())
-// 		{
-// 			while (groupsIterator < match.groupCount())
-// 			{
-// 				token[groupsIterator] = match.group(groupsIterator);
-// 				groupsIterator++;
-// 			}
-// 		}
-// 		else
-// 		{
-// 			throw new Exception("Undefined token");
-// 		}
-
-// 		return token;
-// 	}
-
-// 	private static Tokens[]			parseFile(String fileName) throws Exception {
-// 		FileReader		fileStream	= new FileReader(fileName);
-// 		BufferedReader	buffer		= new BufferedReader(fileStream);
-// 		String			line;
-// 		Tokens[]		tokens;
-// 		int				tokensIterator = 0;
-
-// 		// get first line, check whether it is INT ot not, and save it in weatherChangeCounter
-
-// 		while ((line = buffer.readLine()) != null)
-// 		{
-// 			token[tokensIterator] = stringToToken(line);
-// 			tokensIterator++;
-// 		}
-
-// 		fileStream.close();
-// 		return tokens;
-// 	}
-
-// 	private static Flyable[]	tokensToFlyables(Token[] tokens) throws Exception {
-
-// 	}
-
-// 	public static void			main(String args[]) {
-// 		Tokens[]		tokens;
-// 		Flyable[]		flyableObjects;
-// 		WeatherTower	tower;
-
-// 		try {
-// 			if (args.length == 0)
-// 				throw new UsageException();
-
-// 			tokens = fileToTokens(args[0]);
-// 			flyableObjects = tokensToFlyables(tokens);
-
-// 			for(Flyable object : flyableObjects) {
-// 				tower.register(object);
-// 			}
-
-// 			while (weatherChangeCounter > 0)
-// 			{
-// 				// Main Logic ( one step execution )
-// 				weatherChangeCounter--;
-// 			}
-
-// 		} catch (Exception e) {
-// 		 	System.out.println(e.getMessage());
-// 		}
-
-// 	}
-// }
-
-import java.util.TreeMap;
+class UsageException extends Exception {
+	public String getMessage() {
+		return "usage : " + System.getProperty("sun.java.command") + " [scenario file]";
+	}
+}
 
 public class Simulator {
-	public static void	main(String[] args) {
-		String[]					groupNames = {"type"};
-		final Pattern				regExp = Pattern.compile("(int8|int16|int32)");
-		Matcher						match = regExp.matcher("int8");
-		int							groupsIterator = 0;
-		TreeMap<String, String>		token = new TreeMap<String, String>();
+	/* how many times weather should be changed, during the execution */
+	private static int	weatherChangeCounter;
+
+	private static TreeMap<String, String>			stringToToken(String s) throws Exception {
+		String[]				groupNames = {"type", "name", "longitude", "latitude", "height"};
+		final Pattern			regExp = Pattern.compile("^(Baloon|JetPlane|Helicopter) ([^\\s]+) (\\d+?) (\\d+?) (\\d+)$");
+		Matcher					match = regExp.matcher(s);
+		TreeMap<String, String>	token = null;
+		int						groupsIterator = 0;
+
+		if (match.matches())
+		{
+			token = new TreeMap<String, String>();
+			while (groupsIterator < match.groupCount())
+			{
+				token.put(groupNames[groupsIterator], match.group(groupsIterator + 1)); // + 1, because groups start from 1, not 0
+				groupsIterator++;
+			}
+		}
+		else
+		{
+			throw new Exception("Undefined token -> " + s);
+		}
+
+		return token;
+	}
+
+	private static Vector<TreeMap<String, String> >			fileToTokens(String fileName) throws Exception {
+		FileReader							fileStream	= new FileReader(fileName);
+		BufferedReader						buffer		= new BufferedReader(fileStream);
+		Vector<TreeMap<String, String> >	tokens		= new Vector<TreeMap<String, String> >();
+		String								line;
+
+		if ((line = buffer.readLine()) == null)
+			throw new Exception("First line not specified");
+
+		//	check validity of the first string
+		//	try ... catch need to be here, to throw my own exception
+		weatherChangeCounter = Integer.parseUnsignedInt(line);
+
+		while ((line = buffer.readLine()) != null)
+		{
+			tokens.add(stringToToken(line));
+		}
+
+		fileStream.close();
+		return tokens;
+	}
+
+	// private static Flyable[]	tokensToFlyables(TreeMap<String, String>[] tokens) throws Exception {
+
+	// }
+
+	public static void			main(String args[]) {
+		Vector<TreeMap<String, String> >	tokens;
+		// Flyable[]							flyableObjects;
+		// WeatherTower						tower;
 
 		try {
+			if (args.length == 0)
+				throw new UsageException();
 
-			if (match.matches())
-			{
-				while (groupsIterator < match.groupCount())
-				{
-					token.put(groupNames[groupsIterator], match.group(groupsIterator));
-					groupsIterator++;
-				}
-				groupsIterator = 0;
-				while (groupsIterator < match.groupCount())
-				{
-					System.out.println(token.get(groupNames[groupsIterator]));
-					groupsIterator++;
-				}
+			tokens = fileToTokens(args[0]);
 
-			}
-			else
-			{
-				throw new Exception("Undefined token");
+			System.out.println("weatherChangeCounter=" + weatherChangeCounter);
+			for (TreeMap<String, String> token : tokens) {
+				System.out.println(token.toString());
 			}
 
-		} catch(Exception e) {
-			System.out.println(e.getMessage());
+			// flyableObjects = tokensToFlyables(tokens);
+
+			// for(Flyable object : flyableObjects) {
+			// 	tower.register(object);
+			// }
+
+			// while (weatherChangeCounter > 0)
+			// {
+			// 	// Main Logic ( one step execution )
+			// 	weatherChangeCounter--;
+			// }
+
+		} catch (Exception e) {
+		 	System.out.println(e.getMessage());
 		}
 
 	}
