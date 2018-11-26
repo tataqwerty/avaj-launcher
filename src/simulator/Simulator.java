@@ -1,3 +1,5 @@
+import aircraft.AircraftFactory;
+import aircraft.vehicles.base.*;
 import java.io.*;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
@@ -5,15 +7,14 @@ import java.util.regex.Pattern;
 import java.util.Vector;
 import java.lang.Integer;
 
-class UsageException extends Exception {
-	public String getMessage() {
-		return "usage : " + System.getProperty("sun.java.command") + " [scenario file]";
-	}
-}
-
 public class Simulator {
 	/* how many times weather should be changed, during the execution */
 	private static int	weatherChangeCounter;
+
+	private static void	usage() {
+		System.out.println("usage : " + System.getProperty("sun.java.command") + " [scenario file]");
+		System.exit(0);
+	}
 
 	private static TreeMap<String, String>			stringToToken(String s) throws Exception {
 		String[]				groupNames = {"type", "name", "longitude", "latitude", "height"};
@@ -33,57 +34,72 @@ public class Simulator {
 		}
 		else
 		{
-			throw new Exception("Undefined token -> " + s);
+			throw new Exception("Undefined token");
 		}
 
 		return token;
 	}
 
-	private static Vector<TreeMap<String, String> >			fileToTokens(String fileName) throws Exception {
-		FileReader							fileStream	= new FileReader(fileName);
-		BufferedReader						buffer		= new BufferedReader(fileStream);
-		Vector<TreeMap<String, String> >	tokens		= new Vector<TreeMap<String, String> >();
-		String								line;
+	private static Flyable					tokenToFlyable(TreeMap<String, String> token) throws Exception {
+		// try {
+		// 	int	longitude = Integer.parseInt(token.get("longitude"));
+		// 	int	latitude = Integer.parseInt(token.get("latitude"));
+		// 	int	height = Integer.parseInt(token.get("height"));
+
+		// 	return AicraftFactory.newAircraft(token.get("type"), token.get("name"), longitude, latitude, height);
+		// } catch (Exception e) {
+		// 	throw new Exception("Error : invalid integer value");
+		// }
+
+		return AircraftFactory.newAircraft(token.get("type"), token.get("name"), Integer.parseInt(token.get("longitude")), Integer.parseInt(token.get("latitude")), Integer.parseInt(token.get("height")));
+	}
+
+	private static Vector<Flyable>			fileToFlyables(String fileName) throws Exception {
+		FileReader				fileStream = new FileReader(fileName);
+		BufferedReader			buffer = new BufferedReader(fileStream);
+		Vector<Flyable>			flyables = new Vector<Flyable>();
+		String					line;
+		int						lineCounter = 1;
+		boolean					error = false;
 
 		if ((line = buffer.readLine()) == null)
-			throw new Exception("First line not specified");
+			throw new Exception("invalid first line");
 
-		//	check validity of the first string
-		//	try ... catch need to be here, to throw my own exception
-		weatherChangeCounter = Integer.parseUnsignedInt(line);
+		try {
+			weatherChangeCounter = Integer.parseUnsignedInt(line);
+		} catch (Exception e) {
+			throw new Exception("invalid first line");
+		}
 
 		while ((line = buffer.readLine()) != null)
 		{
-			tokens.add(stringToToken(line));
+			try {
+				flyables.add(tokenToFlyable(stringToToken(line)));
+			} catch (Exception e) {
+				error = true;
+				System.out.println("Error : " + e.getMessage() + " (line " + lineCounter + " -> " + line + " )");
+			}
+			lineCounter++;
 		}
 
 		fileStream.close();
-		return tokens;
+
+		if (error)
+			throw new Exception(fileName + " is invalid file");
+
+		return flyables;
 	}
 
-	// private static Flyable[]	tokensToFlyables(TreeMap<String, String>[] tokens) throws Exception {
-
-	// }
-
 	public static void			main(String args[]) {
-		Vector<TreeMap<String, String> >	tokens;
-		// Flyable[]							flyableObjects;
-		// WeatherTower						tower;
+		Vector<Flyable>		flyables;
+		// WeatherTower		tower;
 
+		if (args.length == 0)
+			usage();
 		try {
-			if (args.length == 0)
-				throw new UsageException();
+			flyables = fileToFlyables(args[0]);
 
-			tokens = fileToTokens(args[0]);
-
-			System.out.println("weatherChangeCounter=" + weatherChangeCounter);
-			for (TreeMap<String, String> token : tokens) {
-				System.out.println(token.toString());
-			}
-
-			// flyableObjects = tokensToFlyables(tokens);
-
-			// for(Flyable object : flyableObjects) {
+			// for(Flyable object : flyables) {
 			// 	tower.register(object);
 			// }
 
@@ -92,9 +108,8 @@ public class Simulator {
 			// 	// Main Logic ( one step execution )
 			// 	weatherChangeCounter--;
 			// }
-
 		} catch (Exception e) {
-		 	System.out.println(e.getMessage());
+			System.out.println("Error : " + e.getMessage());
 		}
 
 	}
