@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Vector;
 import java.lang.Integer;
+import weather.WeatherTower;
 
 public class Simulator {
 	/* how many times weather should be changed, during the execution */
@@ -18,7 +19,7 @@ public class Simulator {
 
 	private static TreeMap<String, String>			stringToToken(String s) throws Exception {
 		String[]				groupNames = {"type", "name", "longitude", "latitude", "height"};
-		final Pattern			regExp = Pattern.compile("^(Baloon|JetPlane|Helicopter) ([^\\s]+) (\\d+?) (\\d+?) (\\d+)$");
+		final Pattern			regExp = Pattern.compile("^([^\\s]+) ([^\\s]+) (\\d+?) (\\d+?) (\\d+)$");
 		Matcher					match = regExp.matcher(s);
 		TreeMap<String, String>	token = null;
 		int						groupsIterator = 0;
@@ -41,18 +42,19 @@ public class Simulator {
 	}
 
 	private static Flyable					tokenToFlyable(TreeMap<String, String> token) throws Exception {
-		try {
-			int	longitude = Integer.parseInt(token.get("longitude"));
-			int	latitude = Integer.parseInt(token.get("latitude"));
-			int	height = Integer.parseInt(token.get("height"));
+		int	longitude;
+		int	latitude;
+		int	height;
 
-			return AircraftFactory.newAircraft(token.get("type"), token.get("name"), longitude, latitude, height);
+		try {
+			longitude = Integer.parseInt(token.get("longitude"));
+			latitude = Integer.parseInt(token.get("latitude"));
+			height = Integer.parseInt(token.get("height"));
 		} catch (Exception e) {
 			throw new Exception("Invalid integer value");
 		}
 
-		//	it looks a lot better, but without custom exceptions
-		// return AircraftFactory.newAircraft(token.get("type"), token.get("name"), Integer.parseInt(token.get("longitude")), Integer.parseInt(token.get("latitude")), Integer.parseInt(token.get("height")));
+		return AircraftFactory.newAircraft(token.get("type"), token.get("name"), longitude, latitude, height);
 	}
 
 	private static Vector<Flyable>			fileToFlyables(String fileName) throws Exception {
@@ -94,16 +96,16 @@ public class Simulator {
 
 	public static void			main(String args[]) {
 		Vector<Flyable>		flyables;
-		// WeatherTower		tower;
+		WeatherTower		tower;
 
 		if (args.length == 0)
 			usage();
 		try {
 			flyables = fileToFlyables(args[0]);
 
-			// for(Flyable object : flyables) {
-			// 	tower.register(object);
-			// }
+			for(Flyable object : flyables) {
+				tower.register(object);
+			}
 
 			// while (weatherChangeCounter > 0)
 			// {
