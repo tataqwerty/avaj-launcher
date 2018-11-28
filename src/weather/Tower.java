@@ -6,15 +6,15 @@ public class Tower {
 	private Vector<Flyable>	observers;
 
 	public void register(Flyable flyable) {
-		...
-		flyable.registerTower(this);
+		if (!observers.contains(flyable))
+			flyable.registerTower(this);
 	}
 
 	public void unregister(Flyable flyable) {
-
+		observers.remove(flyable);
 	}
 
 	protected void	conditionsChanged() {
-		
+
 	}
 }
