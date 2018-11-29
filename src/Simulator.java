@@ -104,7 +104,7 @@ public class Simulator {
 			flyables = fileToFlyables(args[0]);
 
 			for(Flyable object : flyables) {
-				tower.register(object);
+				object.registerTower(tower);
 			}
 
 			// while (weatherChangeCounter > 0)
