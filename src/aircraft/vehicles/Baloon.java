@@ -4,10 +4,10 @@ import aircraft.vehicles.base.*;
 import weather.WeatherTower;
 
 public class Baloon extends Aircraft implements Flyable {
-	private	WeatherTower weatherTower;
+	private	WeatherTower	weatherTower;
 
 	public Baloon(String name, Coordinates coords) {
-		super(name, coords);
+		super(name, "Baloon", coords);
 	}
 
 	public void	updateConditions() {
@@ -15,11 +15,7 @@ public class Baloon extends Aircraft implements Flyable {
 	}
 
 	public void	registerTower(WeatherTower weatherTower) {
-		// this.weatherTower = weatherTower;
-		// weatherTower.register(this);
-	}
-
-	public String	toString()
-	{
+		this.weatherTower = weatherTower;
+		weatherTower.register(this);
 	}
 }

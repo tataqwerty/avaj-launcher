@@ -96,7 +96,7 @@ public class Simulator {
 
 	public static void			main(String args[]) {
 		Vector<Flyable>		flyables;
-		WeatherTower		tower;
+		WeatherTower		tower = new WeatherTower();
 
 		if (args.length == 0)
 			usage();
