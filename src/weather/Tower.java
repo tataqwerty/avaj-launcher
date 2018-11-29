@@ -9,10 +9,7 @@ public class Tower {
 
 	public void register(Flyable flyable) {
 		if (!observers.contains(flyable))
-		{
-			System.out.println("Tower says: " + flyable.toString() + " registered to weather tower.");
 			observers.add(flyable);
-		}
 	}
 
 	public void unregister(Flyable flyable) {

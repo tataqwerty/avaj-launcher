@@ -42,19 +42,13 @@ public class Simulator {
 	}
 
 	private static Flyable					tokenToFlyable(TreeMap<String, String> token) throws Exception {
-		int	longitude;
-		int	latitude;
-		int	height;
-
-		try {
-			longitude = Integer.parseInt(token.get("longitude"));
-			latitude = Integer.parseInt(token.get("latitude"));
-			height = Integer.parseInt(token.get("height"));
-		} catch (Exception e) {
-			throw new Exception("Invalid integer value");
-		}
-
-		return AircraftFactory.newAircraft(token.get("type"), token.get("name"), longitude, latitude, height);
+		return AircraftFactory.newAircraft(
+			token.get("type"),
+			token.get("name"),
+			Integer.parseInt(token.get("longitude")),
+			Integer.parseInt(token.get("latitude")),
+			Integer.parseInt(token.get("height"))
+		);
 	}
 
 	private static Vector<Flyable>			fileToFlyables(String fileName) throws Exception {
@@ -97,21 +91,26 @@ public class Simulator {
 	public static void			main(String args[]) {
 		Vector<Flyable>		flyables;
 		WeatherTower		tower = new WeatherTower();
+		FileWriter			outFile;
 
 		if (args.length == 0)
 			usage();
 		try {
 			flyables = fileToFlyables(args[0]);
+			outFile = new FileWriter("simulation.txt");
 
 			for(Flyable object : flyables) {
 				object.registerTower(tower);
+				outFile.write("Tower says: " + object.toString() + " registered to weather tower.\n");
 			}
 
-			// while (weatherChangeCounter > 0)
-			// {
-			// 	// Main Logic ( one step execution )
-			// 	weatherChangeCounter--;
-			// }
+			while (weatherChangeCounter > 0)
+			{
+				// Main Logic ( one step execution )
+				weatherChangeCounter--;
+			}
+
+			outFile.close();
 		} catch (Exception e) {
 			System.out.println("Error : " + e.getMessage());
 		}
