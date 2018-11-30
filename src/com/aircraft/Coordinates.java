@@ -1,11 +1,11 @@
-package aircraft.vehicles.base;
+package com.aircraft;
 
 public class Coordinates {
 	private int	longitude;
 	private int	latitude;
 	private int	height;
 
-	public Coordinates(int longitude, int latitude, int height) throws Exception {
+	Coordinates(int longitude, int latitude, int height) throws Exception {
 		this.longitude = longitude;
 		this.latitude = latitude;
 			

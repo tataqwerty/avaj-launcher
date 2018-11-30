@@ -1,12 +1,11 @@
-package aircraft.vehicles;
+package com.aircraft;
 
-import aircraft.vehicles.base.*;
-import weather.WeatherTower;
+import com.weather.WeatherTower;
 
 public class Helicopter extends Aircraft implements Flyable {
 	private	WeatherTower	weatherTower;
 
-	public Helicopter(String name, Coordinates coords) {
+	Helicopter(String name, Coordinates coords) {
 		super(name, "Helicopter", coords);
 	}
 
@@ -14,7 +13,8 @@ public class Helicopter extends Aircraft implements Flyable {
 
 	}
 
-	public void	registerTower(WeatherTower weatherTower) {
+	public void	registerTower(WeatherTower weatherTower) throws Exception
+	{
 		this.weatherTower = weatherTower;
 		weatherTower.register(this);
 	}

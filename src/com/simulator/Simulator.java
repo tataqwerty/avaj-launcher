@@ -1,12 +1,14 @@
-import aircraft.AircraftFactory;
-import aircraft.vehicles.base.*;
+package com.simulator;
+
 import java.io.*;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Vector;
 import java.lang.Integer;
-import weather.WeatherTower;
+import com.aircraft.AircraftFactory;
+import com.aircraft.Flyable;
+import com.weather.WeatherTower;
 
 public class Simulator {
 	/* how many times weather should be changed, during the execution */
@@ -91,26 +93,23 @@ public class Simulator {
 	public static void			main(String args[]) {
 		Vector<Flyable>		flyables;
 		WeatherTower		tower = new WeatherTower();
-		FileWriter			outFile;
 
 		if (args.length == 0)
 			usage();
 		try {
 			flyables = fileToFlyables(args[0]);
-			outFile = new FileWriter("simulation.txt");
 
 			for(Flyable object : flyables) {
 				object.registerTower(tower);
-				outFile.write("Tower says: " + object.toString() + " registered to weather tower.\n");
 			}
 
 			while (weatherChangeCounter > 0)
 			{
-				// Main Logic ( one step execution )
+				tower.changeWeatherHandler();
 				weatherChangeCounter--;
 			}
 
-			outFile.close();
+			Logger.close();
 		} catch (Exception e) {
 			System.out.println("Error : " + e.getMessage());
 		}

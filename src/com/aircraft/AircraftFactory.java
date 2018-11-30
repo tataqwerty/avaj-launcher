@@ -1,7 +1,5 @@
-package aircraft;
+package com.aircraft;
 
-import aircraft.vehicles.*;
-import aircraft.vehicles.base.*;
 import java.util.TreeMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,12 +27,16 @@ public class AircraftFactory {
 		}
 	}
 
-	public static Flyable	newAircraft(String type, String name, int longitude, int latitude, int height) throws Exception {
-		TreeMap<String, ICreator>	createFunctions = new TreeMap<String, ICreator>();
+	private static TreeMap<String, ICreator>	createFunctions = null;
 
-		createFunctions.put("Baloon", new BaloonCreator());
-		createFunctions.put("Helicopter", new HelicopterCreator());
-		createFunctions.put("JetPlane", new JetPlaneCreator());
+	public static Flyable	newAircraft(String type, String name, int longitude, int latitude, int height) throws Exception {
+		if (createFunctions == null)
+		{
+			createFunctions = new TreeMap<String, ICreator>();
+			createFunctions.put("Baloon", new BaloonCreator());
+			createFunctions.put("Helicopter", new HelicopterCreator());
+			createFunctions.put("JetPlane", new JetPlaneCreator());
+		}
 
 		/* for safety reasons */
 		if (createFunctions.get(type) == null)

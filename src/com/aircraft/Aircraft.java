@@ -1,13 +1,14 @@
-package aircraft.vehicles.base;
+package com.aircraft;
 
 public class Aircraft {
 	private static long		idCounter;
 	protected long			id;
 	protected String		name;
 	protected Coordinates	coordinates;
-	protected String		type;	//	added
+	protected String		type;
 
-	protected Aircraft(String name, String type, Coordinates coords) {	//	type added
+	protected Aircraft(String name, String type, Coordinates coords)
+	{
 		this.type = type;
 		this.name = name;
 		this.coordinates = coords;
@@ -15,7 +16,8 @@ public class Aircraft {
 		idCounter++;
 	}
 
-	private long	nextId() {
+	private long	nextId()
+	{
 		return idCounter + 1;
 	}
 
