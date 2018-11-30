@@ -3,6 +3,7 @@ package com.weather;
 import com.aircraft.Coordinates;
 import java.util.Arrays;
 import java.util.Random;
+import java.io.*;
 
 public class WeatherProvider {
 	private static WeatherProvider	weatherProvider = null;
@@ -21,6 +22,7 @@ public class WeatherProvider {
 	public String	getCurrentWeather(Coordinates coordinates)
 	{
 		Random rand = new Random(coordinates.getLongitude() + coordinates.getLatitude() + coordinates.getHeight());
+
 		return weather[rand.nextInt(Arrays.asList(weather).size())];
 	}
 }

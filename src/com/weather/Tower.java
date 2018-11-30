@@ -2,8 +2,8 @@ package com.weather;
 
 import com.aircraft.Flyable;
 import com.simulator.Logger;
-import java.io.*;
 import java.util.Vector;
+import java.io.*;
 
 public class Tower {
 	private Vector<Flyable>		observers;
@@ -22,12 +22,13 @@ public class Tower {
 		}
 	}
 
-	public void unregister(Flyable flyable)
+	public void unregister(Flyable flyable) throws Exception
 	{
 		observers.remove(flyable);
+		Logger.write("Tower says: " + flyable.toString() + " unregistered from weather tower.\n");
 	}
 
-	protected void	conditionsChanged()
+	protected void	conditionsChanged() throws Exception
 	{
 		for (Flyable flyable : observers)
 		{
